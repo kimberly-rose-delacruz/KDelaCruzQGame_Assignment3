@@ -54,5 +54,11 @@ namespace KDelaCruzQGame
             this.SizeMode = PictureBoxSizeMode.StretchImage;
             this.currentSelectedToolBoxImage = DesignForm.selectedToolBox;
         }
+
+        public void ChangeGameTile(int gameTileType)
+        {
+            this.currentSelectedToolBoxImage = gameTileType;
+            this.Image = toolBoxImageService.GetImage(this.currentSelectedToolBoxImage);
+        }
     }
 }

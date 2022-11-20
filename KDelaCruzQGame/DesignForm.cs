@@ -26,7 +26,7 @@ namespace KDelaCruzQGame
         public int rowNumber = 0;
         public int columnNumber = 0;
         public const string ERROR_MESSAGE = "Please provide valid data for rows and columns (Both must be integers)";
-        public const int SIZE = 100;
+        public const int SIZE = 80;
         public const int NONE_VALUE = 0;
         public const int WALL_VALUE = 1;
         public const int RED_DOOR_VALUE = 2;

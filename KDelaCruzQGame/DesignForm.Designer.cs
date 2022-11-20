@@ -68,7 +68,7 @@
             this.fileToolStripMenuItem1});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1219, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1322, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -128,7 +128,7 @@
             this.panel1.Controls.Add(this.lblRows);
             this.panel1.Location = new System.Drawing.Point(0, 27);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1207, 90);
+            this.panel1.Size = new System.Drawing.Size(1287, 90);
             this.panel1.TabIndex = 1;
             // 
             // txtBoxNumColumns
@@ -348,7 +348,7 @@
             this.pnlParentBoard.Cursor = System.Windows.Forms.Cursors.Default;
             this.pnlParentBoard.Location = new System.Drawing.Point(234, 130);
             this.pnlParentBoard.Name = "pnlParentBoard";
-            this.pnlParentBoard.Size = new System.Drawing.Size(973, 703);
+            this.pnlParentBoard.Size = new System.Drawing.Size(1053, 878);
             this.pnlParentBoard.TabIndex = 3;
             // 
             // dlgSaveFile
@@ -360,7 +360,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1219, 990);
+            this.ClientSize = new System.Drawing.Size(1322, 1020);
             this.Controls.Add(this.pnlParentBoard);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);

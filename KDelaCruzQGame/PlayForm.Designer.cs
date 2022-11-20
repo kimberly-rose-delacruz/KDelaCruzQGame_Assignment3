@@ -67,14 +67,14 @@
             // loadGameToolStripMenuItem
             // 
             this.loadGameToolStripMenuItem.Name = "loadGameToolStripMenuItem";
-            this.loadGameToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadGameToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.loadGameToolStripMenuItem.Text = "Load Game";
             this.loadGameToolStripMenuItem.Click += new System.EventHandler(this.loadGameToolStripMenuItem_Click);
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.closeToolStripMenuItem.Text = "Close";
             // 
             // pnlBoard
@@ -94,6 +94,7 @@
             this.btnUp.TabIndex = 2;
             this.btnUp.Text = "Up";
             this.btnUp.UseVisualStyleBackColor = true;
+            this.btnUp.Click += new System.EventHandler(this.btnUp_Click);
             // 
             // btnLeft
             // 
@@ -147,6 +148,7 @@
             // 
             // txtBoxNumOfMoves
             // 
+            this.txtBoxNumOfMoves.Enabled = false;
             this.txtBoxNumOfMoves.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.txtBoxNumOfMoves.Location = new System.Drawing.Point(897, 73);
             this.txtBoxNumOfMoves.Name = "txtBoxNumOfMoves";
@@ -155,6 +157,7 @@
             // 
             // txtBoxNumRemainingBoxes
             // 
+            this.txtBoxNumRemainingBoxes.Enabled = false;
             this.txtBoxNumRemainingBoxes.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.txtBoxNumRemainingBoxes.Location = new System.Drawing.Point(897, 178);
             this.txtBoxNumRemainingBoxes.Name = "txtBoxNumRemainingBoxes";

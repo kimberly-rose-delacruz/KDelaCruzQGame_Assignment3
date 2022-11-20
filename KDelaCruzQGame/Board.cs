@@ -12,7 +12,9 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -21,8 +23,16 @@ namespace KDelaCruzQGame
     public class Board
     {
         //global variables
-        public const int ROW_INDEX = 0;
-        public const int COL_INDEX = 1;
+        private const int ROW_INDEX = 0;
+        private const int COL_INDEX = 1;
+
+        //countTotalOfGameTilesLoad
+        private int countOfGameTilesInPlay = 0;
+        public GameTile[,] currentPlayableTiles; 
+        Panel currentPnlBoard = new Panel();
+        public ToolBoxImageService toolImageService = new ToolBoxImageService();
+
+        public static IMovableGameTile SELECTED_MOVABLE_GAMETILE = null;
 
         //this method will save the design to the text file according to the selected tool box image with getting out the statistics count of walls, doors, or boxes if added as part of the design.
         public void SaveDesignToTextFile(string fileName, GameTile[,] gameTiles, out int totalCountWall, out int totalCountDoor, out int totalCountBox)
@@ -75,20 +85,20 @@ namespace KDelaCruzQGame
             writer.Close();
         }
 
-        public void LoadGameFileToBoard(string fileName, Panel pnlBoard, int size)
+        public void LoadGameFileToBoard(string fileName, Panel pnlBoard, int size, out int numOfBoxes)
         {
             StreamReader reader = new StreamReader(fileName);
             int rowNumFromFile = int.Parse(reader.ReadLine()); //readline
             int colNumFromFile = int.Parse(reader.ReadLine());
-
-            //empty array storage for the gameTiles
-            GameTile[,] gameTiles = new GameTile[rowNumFromFile, colNumFromFile];
+            GameTile[,]  gameTiles = new GameTile[rowNumFromFile, colNumFromFile];
 
             var toolboxImageValueFromFile = 0;
             int currentRowValue = 0;
             int currentColValue = 0;
             int count = 0;
             string line;
+            int countNumOfBoxes = 0;
+
 
             while ((line = reader.ReadLine())!= null)
             {
@@ -108,7 +118,7 @@ namespace KDelaCruzQGame
                     toolboxImageValueFromFile = int.Parse(line);
 
                     //create a new gametile storage for each tile
-                    GameTile newTile = new GameTile(toolboxImageValueFromFile);// send the coordinates (row, col) num of the selected gameTile from the board.
+                    MovableGameTile newTile = new MovableGameTile(toolboxImageValueFromFile);// send the coordinates (row, col) num of the selected gameTile from the board.
                     //store the new game tile into the array with coordinate
 
                     newTile.Location = new Point(currentColValue * size + size, currentRowValue * size + size);
@@ -117,14 +127,123 @@ namespace KDelaCruzQGame
                     newTile.Visible = true;
                     newTile.BorderStyle = BorderStyle.Fixed3D;
                     newTile.BringToFront();
+                    
+                    newTile.XCoordinateOfTile = currentColValue;
+                    newTile.YCoordinateOfTile = currentRowValue;
+
                     pnlBoard.Controls.Add(newTile);
+                    
 
                     //
                     gameTiles[currentRowValue, currentColValue] = newTile;
+                    if(newTile.currentSelectedToolBoxImage == DesignForm.GREEN_BOX_VALUE || newTile.currentSelectedToolBoxImage == DesignForm.RED_BOX_VALUE)
+                    {
+                        countNumOfBoxes++;
+                    }
 
                     count = 0;
+                    countOfGameTilesInPlay++;
                 }
 
+            }
+
+            //fetching the total number of boxes available within the design.
+            numOfBoxes = countNumOfBoxes;
+            currentPlayableTiles = gameTiles;
+            currentPnlBoard = pnlBoard; 
+        }
+
+
+        public bool IsBoardGameOccupied()
+        {
+            if(countOfGameTilesInPlay != 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public void ClearTheGamesTilesInTheBoard()
+        {          
+
+            for (int row = 0; row < currentPlayableTiles.GetLength(ROW_INDEX); row++)
+            {
+                for(int column=0;column < currentPlayableTiles.GetLength(COL_INDEX); column++)
+                {
+                    //per tile according to the grid it will clear and set it to None value.
+                    GameTile currentGameTile = currentPlayableTiles[row, column];
+                    currentPnlBoard.Controls.Remove(currentGameTile);
+                }
+            }         
+        }
+
+        public bool MoveTileUpward(IMovableGameTile activeGameTile)
+        {
+            
+            var lastLocationOfGameTile = activeGameTile.YCoordinateOfTile;
+            bool boxMustExit = false;
+            //check upward movement based on the given activeTile position until it stops at position 0 of the array
+            for(int m=activeGameTile.YCoordinateOfTile-1; m >= 0; m--)
+            {
+                var nextGameTile = currentPlayableTiles[m, activeGameTile.XCoordinateOfTile];
+
+                //assess if the nextGameTile can be occupied
+                if(nextGameTile.currentSelectedToolBoxImage == DesignForm.NONE_VALUE)
+                {
+                    lastLocationOfGameTile = m;
+                    boxMustExit = false;
+                }
+                else if(nextGameTile.currentSelectedToolBoxImage == DesignForm.GREEN_DOOR_VALUE
+                    && activeGameTile.CurrentSelectToolBox == DesignForm.GREEN_BOX_VALUE)
+                {
+                    boxMustExit = true;
+                }
+                else if(nextGameTile.currentSelectedToolBoxImage == DesignForm.RED_DOOR_VALUE
+                    && activeGameTile.CurrentSelectToolBox == DesignForm.RED_BOX_VALUE)
+                {
+                    boxMustExit = true;
+                }
+                else
+                {
+                    boxMustExit = false;
+                    break;
+                }
+            }
+
+
+            //evaluated results above will execute this logic below:
+            if (boxMustExit == true)
+            {
+                //make it disappear the box if same colored box and door met.
+                activeGameTile.ChangeGameTile(DesignForm.NONE_VALUE);
+                return true;
+                //receive MOveTileStatus == true to playform form  then increment the number of moves 
+
+            }
+            else if(lastLocationOfGameTile != activeGameTile.YCoordinateOfTile)
+            {
+                var destinationGameTile = currentPlayableTiles[lastLocationOfGameTile, activeGameTile.XCoordinateOfTile];
+
+                //the created destinationGameTile will change its gametile
+                destinationGameTile.ChangeGameTile(activeGameTile.CurrentSelectToolBox);
+                
+                //change active game tile to none_value
+                activeGameTile.ChangeGameTile(DesignForm.NONE_VALUE);
+
+                //SELECTED_MOVABLE_GAMETILE to destinationGameTile so the board will know that the activeGameTile position has been changed to the the new position.
+                SELECTED_MOVABLE_GAMETILE = (IMovableGameTile)destinationGameTile;
+
+                return true;
+                //receive MOveTileStatus == true to playform form  then increment the number of moves 
+            }
+            else
+            {
+                //the box didn't move nor exit meaning (location is still the same)
+                return false;
+                //no update on number of moves.
             }
 
         }
