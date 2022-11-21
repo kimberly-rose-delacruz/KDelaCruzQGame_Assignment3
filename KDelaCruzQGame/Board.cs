@@ -2,6 +2,7 @@
  * This class is for each generated tile using Picturebox by inheriting it as a representation of each tile to the Design Form
  * 
  * Revision History:
+ *      Kimberly Dela Cruz, 2022.11.20: Add the functions for controllers and clearing of the game tiles when user attempts to upload a new level for Qgame.
  *      Kimberly Dela Cruz, 2022.11.01: Modify code with messagebox for total count of wall, boxes, and doors when design has been finalized to be saved in a file.
  *      Kimberly Dela Cruz, 2022.10.15: Created
  */
@@ -85,6 +86,7 @@ namespace KDelaCruzQGame
             writer.Close();
         }
 
+        //this method will load the game tile to the board accordingly.
         public void LoadGameFileToBoard(string fileName, Panel pnlBoard, int size, out int numOfBoxes)
         {
             StreamReader reader = new StreamReader(fileName);
@@ -153,7 +155,7 @@ namespace KDelaCruzQGame
             currentPnlBoard = pnlBoard; 
         }
 
-
+        //this method will check if the board game has loaded a game to be cleared in case that the player wants a different level for the Qgame.
         public bool IsBoardGameOccupied()
         {
             if(countOfGameTilesInPlay != 0)
@@ -166,6 +168,7 @@ namespace KDelaCruzQGame
             }
         }
 
+        //this method can be used to clear the game board for Qgame if in case the user tries to upload a new level game.
         public void ClearTheGamesTilesInTheBoard()
         {          
 
@@ -180,11 +183,13 @@ namespace KDelaCruzQGame
             }         
         }
 
-        public bool MoveTileUpward(IMovableGameTile activeGameTile)
+        //this method will be used to move an active box upward and evaluate its move based on its step.
+        public bool MoveTileUpward(IMovableGameTile activeGameTile, out int countOfExitBoxes)
         {
             
             var lastLocationOfGameTile = activeGameTile.YCoordinateOfTile;
             bool boxMustExit = false;
+            int totalExitedBoxes = 0;
             //check upward movement based on the given activeTile position until it stops at position 0 of the array
             for(int m=activeGameTile.YCoordinateOfTile-1; m >= 0; m--)
             {
@@ -199,11 +204,14 @@ namespace KDelaCruzQGame
                 else if(nextGameTile.currentSelectedToolBoxImage == DesignForm.GREEN_DOOR_VALUE
                     && activeGameTile.CurrentSelectToolBox == DesignForm.GREEN_BOX_VALUE)
                 {
+                    totalExitedBoxes++;
+
                     boxMustExit = true;
                 }
                 else if(nextGameTile.currentSelectedToolBoxImage == DesignForm.RED_DOOR_VALUE
                     && activeGameTile.CurrentSelectToolBox == DesignForm.RED_BOX_VALUE)
                 {
+                    totalExitedBoxes++;
                     boxMustExit = true;
                 }
                 else
@@ -219,6 +227,7 @@ namespace KDelaCruzQGame
             {
                 //make it disappear the box if same colored box and door met.
                 activeGameTile.ChangeGameTile(DesignForm.NONE_VALUE);
+                countOfExitBoxes = totalExitedBoxes;
                 return true;
                 //receive MOveTileStatus == true to playform form  then increment the number of moves 
 
@@ -235,6 +244,7 @@ namespace KDelaCruzQGame
 
                 //SELECTED_MOVABLE_GAMETILE to destinationGameTile so the board will know that the activeGameTile position has been changed to the the new position.
                 SELECTED_MOVABLE_GAMETILE = (IMovableGameTile)destinationGameTile;
+                countOfExitBoxes = totalExitedBoxes;
 
                 return true;
                 //receive MOveTileStatus == true to playform form  then increment the number of moves 
@@ -242,8 +252,213 @@ namespace KDelaCruzQGame
             else
             {
                 //the box didn't move nor exit meaning (location is still the same)
+                countOfExitBoxes = totalExitedBoxes;
                 return false;
                 //no update on number of moves.
+            }
+
+        }
+
+        //this method will be used to move an active box Left and evaluate its move based on its step.
+        public bool MoveTileGoingLeft(IMovableGameTile activeGameTile, out int countOfExitBoxes)
+        {
+            var lastLocationOfGameTile = activeGameTile.XCoordinateOfTile;
+
+            bool boxMustExit = false;
+            int totalExitedBoxes = 0;
+
+            for (int m=activeGameTile.XCoordinateOfTile - 1; m>=0; m--)
+            {
+                var nextGameTile = currentPlayableTiles[activeGameTile.YCoordinateOfTile, m];
+
+                if(nextGameTile.currentSelectedToolBoxImage == DesignForm.NONE_VALUE)
+                {
+                    lastLocationOfGameTile = m;
+                    boxMustExit = false;
+                }
+                else if (nextGameTile.currentSelectedToolBoxImage == DesignForm.GREEN_DOOR_VALUE
+                    && activeGameTile.CurrentSelectToolBox == DesignForm.GREEN_BOX_VALUE)
+                {
+                    totalExitedBoxes++;
+                    boxMustExit = true;
+                }
+                else if (nextGameTile.currentSelectedToolBoxImage == DesignForm.RED_DOOR_VALUE
+                    && activeGameTile.CurrentSelectToolBox == DesignForm.RED_BOX_VALUE)
+                {
+                    totalExitedBoxes++;
+                    boxMustExit = true;
+                }
+                else
+                {
+                    boxMustExit = false;
+                    break;
+                }
+            }
+
+            //evaluated results bove will execute this logic below
+            if(boxMustExit == true)
+            {
+                activeGameTile.ChangeGameTile(DesignForm.NONE_VALUE);
+                countOfExitBoxes = totalExitedBoxes;
+                return true;
+            }
+            else if(lastLocationOfGameTile != activeGameTile.XCoordinateOfTile)
+            {
+                var destinationGameTile = currentPlayableTiles[activeGameTile.YCoordinateOfTile, lastLocationOfGameTile];
+
+                destinationGameTile.ChangeGameTile(activeGameTile.CurrentSelectToolBox);
+
+                activeGameTile.ChangeGameTile(DesignForm.NONE_VALUE);
+
+                SELECTED_MOVABLE_GAMETILE = (IMovableGameTile)destinationGameTile;
+                countOfExitBoxes = totalExitedBoxes;
+
+                return true;
+            }
+            else
+            {
+                countOfExitBoxes = totalExitedBoxes;
+                return false;
+            }
+        }
+
+        //this method will be used to move an active box downward and evaluate its move based on its step.
+        public bool MoveTileDownward(IMovableGameTile activeGameTile, out int countOfExitBoxes)
+        {
+            var lastLocationOfGameTile = activeGameTile.YCoordinateOfTile;
+
+            bool boxMustExit = false;
+            int totalExitedBoxes = 0;
+
+            //this is the max number of index to loop within to check each tile if there is blocker/or door
+            int boardHeight = currentPlayableTiles.GetLength(ROW_INDEX);
+
+            //ever loop moving (m) tile will increase its index and evaluates the nextgametile attribute if its wall, door, box, or not  occupied.
+            for (int m = activeGameTile.YCoordinateOfTile+1; m < boardHeight;m++ )
+            {
+                var nextGameTile = currentPlayableTiles[m, activeGameTile.XCoordinateOfTile];
+
+                //assess if the nextGameTile can be occupied
+                if (nextGameTile.currentSelectedToolBoxImage == DesignForm.NONE_VALUE)
+                {
+                    lastLocationOfGameTile = m;
+                    boxMustExit = false;
+                }
+                else if (nextGameTile.currentSelectedToolBoxImage == DesignForm.GREEN_DOOR_VALUE
+                    && activeGameTile.CurrentSelectToolBox == DesignForm.GREEN_BOX_VALUE)
+                {
+                    totalExitedBoxes++;
+                    boxMustExit = true;
+                }
+                else if (nextGameTile.currentSelectedToolBoxImage == DesignForm.RED_DOOR_VALUE
+                    && activeGameTile.CurrentSelectToolBox == DesignForm.RED_BOX_VALUE)
+                {
+                    totalExitedBoxes++;
+                    boxMustExit = true;
+                }
+                else
+                {
+                    boxMustExit = false;
+                    break;
+                }
+            }
+
+            //evaluate again the results above base on if the box must exit or switch the game tiles if it does move from origin to destination point.
+
+            if(boxMustExit == true)
+            {
+                activeGameTile.ChangeGameTile(DesignForm.NONE_VALUE);
+                countOfExitBoxes = totalExitedBoxes;
+                return true;
+            }
+            else if(lastLocationOfGameTile != activeGameTile.YCoordinateOfTile)
+            {
+                var destinationGameTile = currentPlayableTiles[lastLocationOfGameTile, activeGameTile.XCoordinateOfTile];
+
+                //the created destinationGameTile will change its gametile
+                destinationGameTile.ChangeGameTile(activeGameTile.CurrentSelectToolBox);
+
+                //change active game tile to none_value
+                activeGameTile.ChangeGameTile(DesignForm.NONE_VALUE);
+
+                //SELECTED_MOVABLE_GAMETILE to destinationGameTile so the board will know that the activeGameTile position has been changed to the the new position.
+                SELECTED_MOVABLE_GAMETILE = (IMovableGameTile)destinationGameTile;
+                countOfExitBoxes = totalExitedBoxes;
+                return true;
+                //receive MOveTileStatus == true to playform form  then increment the number of moves 
+            }
+            else
+            {
+                countOfExitBoxes = totalExitedBoxes;
+                //the box didn't move nor exit meaning (location is still the same)
+                return false;
+            }
+        }
+
+        //this method will be used to move an active box Right and evaluate its move based on its step.
+
+        public bool MoveTileGoingRight(IMovableGameTile activeGameTile, out int countOfExitBoxes)
+        {
+            var lastLocationOfGameTile = activeGameTile.XCoordinateOfTile;
+
+            bool boxMustExit = false;
+            int totalExitedBoxes = 0;
+
+            int boardWidth = currentPlayableTiles.GetLength(COL_INDEX);
+
+
+            for (int m = activeGameTile.XCoordinateOfTile + 1; m < boardWidth; m++)
+            {
+                var nextGameTile = currentPlayableTiles[activeGameTile.YCoordinateOfTile, m];
+
+                if (nextGameTile.currentSelectedToolBoxImage == DesignForm.NONE_VALUE)
+                {
+                    lastLocationOfGameTile = m;
+                    boxMustExit = false;
+                }
+                else if (nextGameTile.currentSelectedToolBoxImage == DesignForm.GREEN_DOOR_VALUE
+                    && activeGameTile.CurrentSelectToolBox == DesignForm.GREEN_BOX_VALUE)
+                {
+                    totalExitedBoxes++;
+                    boxMustExit = true;
+                }
+                else if (nextGameTile.currentSelectedToolBoxImage == DesignForm.RED_DOOR_VALUE
+                    && activeGameTile.CurrentSelectToolBox == DesignForm.RED_BOX_VALUE)
+                {
+                    totalExitedBoxes++;
+                    boxMustExit = true;
+                }
+                else
+                {
+                    boxMustExit = false;
+                    break;
+                }
+            }
+
+            //evaluated results bove will execute this logic below
+            if (boxMustExit == true)
+            {
+                activeGameTile.ChangeGameTile(DesignForm.NONE_VALUE);
+                countOfExitBoxes = totalExitedBoxes;
+                return true;
+            }
+            else if (lastLocationOfGameTile != activeGameTile.XCoordinateOfTile)
+            {
+                var destinationGameTile = currentPlayableTiles[activeGameTile.YCoordinateOfTile, lastLocationOfGameTile];
+
+                destinationGameTile.ChangeGameTile(activeGameTile.CurrentSelectToolBox);
+
+                activeGameTile.ChangeGameTile(DesignForm.NONE_VALUE);
+
+                SELECTED_MOVABLE_GAMETILE = (IMovableGameTile)destinationGameTile;
+                countOfExitBoxes = totalExitedBoxes;
+
+                return true;
+            }
+            else
+            {
+                countOfExitBoxes = totalExitedBoxes;
+                return false;
             }
 
         }
