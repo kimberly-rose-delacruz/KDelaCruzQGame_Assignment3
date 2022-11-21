@@ -147,5 +147,11 @@ namespace KDelaCruzQGame
             }
 
         }
+
+        private void closeToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            //closing the form.
+            this.Close();
+        }
     }
 }

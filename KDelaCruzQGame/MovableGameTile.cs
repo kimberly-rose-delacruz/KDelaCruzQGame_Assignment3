@@ -16,8 +16,8 @@ namespace KDelaCruzQGame
 
         public int CurrentSelectToolBox => this.currentSelectedToolBoxImage;
 
-        public int XCoordinateOfTile { get; set; }
-        public int YCoordinateOfTile { get; set; }
+        public int ColumnCoordinateOfTile { get; set; }
+        public int RowCoordinateOfTile { get; set; }
 
         private void InitializeComponent()
         {

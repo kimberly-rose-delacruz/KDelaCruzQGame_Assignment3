@@ -125,6 +125,7 @@ namespace KDelaCruzQGame
             }
             catch (Exception ex)
             {
+                //showing error message via messagebox when unexpected error occur when using the Qgame.
 
                 MessageBox.Show(ERROR_MESSAGE_2 + ex.Message, "Qgame", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -170,6 +171,7 @@ namespace KDelaCruzQGame
             }
             catch (Exception ex)
             {
+                //showing error message via messagebox when unexpected error occur when using the Qgame.
 
                 MessageBox.Show(ERROR_MESSAGE_2 + ex.Message, "Qgame", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -214,6 +216,7 @@ namespace KDelaCruzQGame
             }
             catch (Exception ex)
             {
+                //showing error message via messagebox when unexpected error occur when using the Qgame.
 
                 MessageBox.Show(ERROR_MESSAGE_2 + ex.Message, "Qgame", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -260,10 +263,16 @@ namespace KDelaCruzQGame
             }
             catch (Exception ex)
             {
-
+                //showing error message via messagebox when unexpected error occur when using the Qgame.
                 MessageBox.Show(ERROR_MESSAGE_2 + ex.Message, "Qgame", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
+        }
+
+        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //closing the form.
+            this.Close();
         }
     }
 }

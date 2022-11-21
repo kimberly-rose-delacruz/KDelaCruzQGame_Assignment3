@@ -130,8 +130,8 @@ namespace KDelaCruzQGame
                     newTile.BorderStyle = BorderStyle.Fixed3D;
                     newTile.BringToFront();
                     
-                    newTile.XCoordinateOfTile = currentColValue;
-                    newTile.YCoordinateOfTile = currentRowValue;
+                    newTile.ColumnCoordinateOfTile = currentColValue;
+                    newTile.RowCoordinateOfTile = currentRowValue;
 
                     pnlBoard.Controls.Add(newTile);
                     
@@ -187,13 +187,13 @@ namespace KDelaCruzQGame
         public bool MoveTileUpward(IMovableGameTile activeGameTile, out int countOfExitBoxes)
         {
             
-            var lastLocationOfGameTile = activeGameTile.YCoordinateOfTile;
+            var lastLocationOfGameTile = activeGameTile.RowCoordinateOfTile;
             bool boxMustExit = false;
             int totalExitedBoxes = 0;
             //check upward movement based on the given activeTile position until it stops at position 0 of the array
-            for(int m=activeGameTile.YCoordinateOfTile-1; m >= 0; m--)
+            for(int m=activeGameTile.RowCoordinateOfTile - 1; m >= 0; m--)
             {
-                var nextGameTile = currentPlayableTiles[m, activeGameTile.XCoordinateOfTile];
+                var nextGameTile = currentPlayableTiles[m, activeGameTile.ColumnCoordinateOfTile];
 
                 //assess if the nextGameTile can be occupied
                 if(nextGameTile.currentSelectedToolBoxImage == DesignForm.NONE_VALUE)
@@ -232,9 +232,9 @@ namespace KDelaCruzQGame
                 //receive MOveTileStatus == true to playform form  then increment the number of moves 
 
             }
-            else if(lastLocationOfGameTile != activeGameTile.YCoordinateOfTile)
+            else if(lastLocationOfGameTile != activeGameTile.RowCoordinateOfTile)
             {
-                var destinationGameTile = currentPlayableTiles[lastLocationOfGameTile, activeGameTile.XCoordinateOfTile];
+                var destinationGameTile = currentPlayableTiles[lastLocationOfGameTile, activeGameTile.ColumnCoordinateOfTile];
 
                 //the created destinationGameTile will change its gametile
                 destinationGameTile.ChangeGameTile(activeGameTile.CurrentSelectToolBox);
@@ -262,14 +262,14 @@ namespace KDelaCruzQGame
         //this method will be used to move an active box Left and evaluate its move based on its step.
         public bool MoveTileGoingLeft(IMovableGameTile activeGameTile, out int countOfExitBoxes)
         {
-            var lastLocationOfGameTile = activeGameTile.XCoordinateOfTile;
+            var lastLocationOfGameTile = activeGameTile.ColumnCoordinateOfTile;
 
             bool boxMustExit = false;
             int totalExitedBoxes = 0;
 
-            for (int m=activeGameTile.XCoordinateOfTile - 1; m>=0; m--)
+            for (int m=activeGameTile.ColumnCoordinateOfTile - 1; m>=0; m--)
             {
-                var nextGameTile = currentPlayableTiles[activeGameTile.YCoordinateOfTile, m];
+                var nextGameTile = currentPlayableTiles[activeGameTile.RowCoordinateOfTile, m];
 
                 if(nextGameTile.currentSelectedToolBoxImage == DesignForm.NONE_VALUE)
                 {
@@ -302,9 +302,9 @@ namespace KDelaCruzQGame
                 countOfExitBoxes = totalExitedBoxes;
                 return true;
             }
-            else if(lastLocationOfGameTile != activeGameTile.XCoordinateOfTile)
+            else if(lastLocationOfGameTile != activeGameTile.ColumnCoordinateOfTile)
             {
-                var destinationGameTile = currentPlayableTiles[activeGameTile.YCoordinateOfTile, lastLocationOfGameTile];
+                var destinationGameTile = currentPlayableTiles[activeGameTile.RowCoordinateOfTile, lastLocationOfGameTile];
 
                 destinationGameTile.ChangeGameTile(activeGameTile.CurrentSelectToolBox);
 
@@ -325,7 +325,7 @@ namespace KDelaCruzQGame
         //this method will be used to move an active box downward and evaluate its move based on its step.
         public bool MoveTileDownward(IMovableGameTile activeGameTile, out int countOfExitBoxes)
         {
-            var lastLocationOfGameTile = activeGameTile.YCoordinateOfTile;
+            var lastLocationOfGameTile = activeGameTile.RowCoordinateOfTile;
 
             bool boxMustExit = false;
             int totalExitedBoxes = 0;
@@ -334,9 +334,9 @@ namespace KDelaCruzQGame
             int boardHeight = currentPlayableTiles.GetLength(ROW_INDEX);
 
             //ever loop moving (m) tile will increase its index and evaluates the nextgametile attribute if its wall, door, box, or not  occupied.
-            for (int m = activeGameTile.YCoordinateOfTile+1; m < boardHeight;m++ )
+            for (int m = activeGameTile.RowCoordinateOfTile + 1; m < boardHeight;m++ )
             {
-                var nextGameTile = currentPlayableTiles[m, activeGameTile.XCoordinateOfTile];
+                var nextGameTile = currentPlayableTiles[m, activeGameTile.ColumnCoordinateOfTile];
 
                 //assess if the nextGameTile can be occupied
                 if (nextGameTile.currentSelectedToolBoxImage == DesignForm.NONE_VALUE)
@@ -371,9 +371,9 @@ namespace KDelaCruzQGame
                 countOfExitBoxes = totalExitedBoxes;
                 return true;
             }
-            else if(lastLocationOfGameTile != activeGameTile.YCoordinateOfTile)
+            else if(lastLocationOfGameTile != activeGameTile.RowCoordinateOfTile)
             {
-                var destinationGameTile = currentPlayableTiles[lastLocationOfGameTile, activeGameTile.XCoordinateOfTile];
+                var destinationGameTile = currentPlayableTiles[lastLocationOfGameTile, activeGameTile.ColumnCoordinateOfTile];
 
                 //the created destinationGameTile will change its gametile
                 destinationGameTile.ChangeGameTile(activeGameTile.CurrentSelectToolBox);
@@ -399,7 +399,7 @@ namespace KDelaCruzQGame
 
         public bool MoveTileGoingRight(IMovableGameTile activeGameTile, out int countOfExitBoxes)
         {
-            var lastLocationOfGameTile = activeGameTile.XCoordinateOfTile;
+            var lastLocationOfGameTile = activeGameTile.ColumnCoordinateOfTile;
 
             bool boxMustExit = false;
             int totalExitedBoxes = 0;
@@ -407,9 +407,9 @@ namespace KDelaCruzQGame
             int boardWidth = currentPlayableTiles.GetLength(COL_INDEX);
 
 
-            for (int m = activeGameTile.XCoordinateOfTile + 1; m < boardWidth; m++)
+            for (int m = activeGameTile.ColumnCoordinateOfTile + 1; m < boardWidth; m++)
             {
-                var nextGameTile = currentPlayableTiles[activeGameTile.YCoordinateOfTile, m];
+                var nextGameTile = currentPlayableTiles[activeGameTile.RowCoordinateOfTile, m];
 
                 if (nextGameTile.currentSelectedToolBoxImage == DesignForm.NONE_VALUE)
                 {
@@ -442,9 +442,9 @@ namespace KDelaCruzQGame
                 countOfExitBoxes = totalExitedBoxes;
                 return true;
             }
-            else if (lastLocationOfGameTile != activeGameTile.XCoordinateOfTile)
+            else if (lastLocationOfGameTile != activeGameTile.ColumnCoordinateOfTile)
             {
-                var destinationGameTile = currentPlayableTiles[activeGameTile.YCoordinateOfTile, lastLocationOfGameTile];
+                var destinationGameTile = currentPlayableTiles[activeGameTile.RowCoordinateOfTile, lastLocationOfGameTile];
 
                 destinationGameTile.ChangeGameTile(activeGameTile.CurrentSelectToolBox);
 

@@ -18,8 +18,8 @@ namespace KDelaCruzQGame
     public interface IMovableGameTile
     {
         int CurrentSelectToolBox { get; }
-        int XCoordinateOfTile { get; set; }
-        int YCoordinateOfTile { get; set; }
+        int ColumnCoordinateOfTile { get; set; }
+        int RowCoordinateOfTile { get; set; }
         void ChangeGameTile(int gameTileType);
     }
 }
